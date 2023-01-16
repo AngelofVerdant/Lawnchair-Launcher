@@ -2,26 +2,27 @@ import com.android.build.gradle.BasePlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id 'com.android.application' version "7.4.0-rc02"
-    id 'com.android.library' version "7.4.0-rc02" apply false
+    id 'com.android.application' version "7.4.0"
+    id 'com.android.library' version "7.4.0" apply false
     id 'org.jetbrains.kotlin.android' version "1.7.20"
     id 'org.jetbrains.kotlin.plugin.parcelize' version "1.7.20"
     id 'org.jetbrains.kotlin.plugin.serialization' version "1.7.20"
     id "com.google.devtools.ksp" version "1.7.20-1.0.8"
     id 'com.google.protobuf' version "0.9.1"
-    id 'com.google.android.gms.oss-licenses-plugin' version "0.10.5"
+    id 'com.google.android.gms.oss-licenses-plugin' version "0.10.6"
     id 'dev.rikka.tools.refine' version "3.1.1"
+    id 'org.gradle.android.cache-fix' version "2.6.2"
 }
 
 allprojects {
     plugins.withType(BasePlugin).configureEach {
+        apply plugin: 'org.gradle.android.cache-fix'
         project.android {
             compileSdk 33
             defaultConfig {
                 minSdk 26
                 targetSdk 32
                 vectorDrawables.useSupportLibrary = true
-                testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
             }
             compileOptions {
                 sourceCompatibility JavaVersion.VERSION_1_8
@@ -34,15 +35,6 @@ allprojects {
         }
         project.dependencies {
             implementation 'androidx.core:core-ktx:1.9.0'
-
-            testImplementation 'junit:junit:4.13.2'
-            androidTestImplementation 'org.mockito:mockito-core:4.10.0'
-            androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
-            androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
-            androidTestImplementation 'com.android.support.test:runner:1.0.2'
-            androidTestImplementation 'com.android.support.test:rules:1.0.2'
-            androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
-            androidTestImplementation "androidx.annotation:annotation:1.5.0"
         }
     }
 
@@ -56,12 +48,6 @@ allprojects {
         it.name.contains("transformClassesWithHiddenApiRefine")
     }.configureEach {
         notCompatibleWithConfigurationCache("https://github.com/RikkaApps/HiddenApiRefinePlugin/issues/9")
-    }
-
-    tasks.matching {
-        it.name.contains("OssLicensesTask")
-    }.configureEach {
-        notCompatibleWithConfigurationCache("https://github.com/google/play-services-plugins/issues/206")
     }
 
     ext.getFrameworkJar = { String name ->
@@ -107,9 +93,9 @@ allprojects {
 // todo remove ext block after migrating to version catalog
 ext {
     accompanist_version = '0.28.0'
-    libsu_version = '5.0.3'
+    libsu_version = '5.0.4'
     protocVersion = '3.21.12'
-    room_version = '2.4.3'
+    room_version = '2.5.0'
     optoVersion = "1.0.18"
 }
 
@@ -132,6 +118,7 @@ final def quickstepMinSdk = "32"
 final def quickstepMaxSdk = "32"
 
 android {
+    namespace "com.android.launcher3"
     defaultConfig {
         versionCode 12_01_00_05
         versionName "${versionDisplayName}"
@@ -144,8 +131,6 @@ android {
         manifestPlaceholders.quickstepMaxSdk = quickstepMaxSdk
         buildConfigField "int", "QUICKSTEP_MIN_SDK", quickstepMinSdk
         buildConfigField "int", "QUICKSTEP_MAX_SDK", quickstepMaxSdk
-
-        ksp { arg("room.schemaLocation", "$projectDir/schemas".toString()) }
     }
 
     applicationVariants.all { variant ->
@@ -155,7 +140,10 @@ android {
     }
 
     buildFeatures {
+        aidl true
+        buildConfig true
         compose true
+        resValues true
     }
 
     composeOptions {
@@ -354,9 +342,9 @@ dependencies {
     implementation 'com.github.ChickenHook:RestrictionBypass:2.2'
     implementation 'dev.rikka.tools.refine:runtime:3.1.1'
 
-    implementation platform("androidx.compose:compose-bom:2022.12.00")
+    implementation platform("androidx.compose:compose-bom:2023.01.00")
     implementation "androidx.compose.ui:ui"
-    implementation "androidx.compose.ui:ui-tooling"
+    debugImplementation "androidx.compose.ui:ui-tooling"
     implementation "androidx.compose.ui:ui-text-google-fonts"
     implementation "androidx.compose.foundation:foundation"
     implementation "androidx.compose.material:material-icons-extended"
@@ -402,6 +390,11 @@ dependencies {
     implementation 'com.github.samanzamani:PersianDate:1.5.4'
 
     implementation 'com.airbnb.android:lottie:5.2.0'
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
 }
 
 protobuf {

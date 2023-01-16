@@ -2,7 +2,6 @@ pluginManagement {
     repositories {
         google()
         gradlePluginPortal()
-        maven { url "https://storage.googleapis.com/r8-releases/raw"}
     }
     resolutionStrategy {
         eachPlugin {
@@ -12,17 +11,11 @@ pluginManagement {
             }
         }
     }
-    buildscript {
-        dependencies {
-            // https://issuetracker.google.com/issues/262661471
-            classpath("com.android.tools:r8:4.0.47")
-        }
-    }
 }
 
 // https://docs.gradle.com/enterprise/gradle-plugin/
 plugins {
-    id "com.gradle.enterprise" version "3.12.1"
+    id "com.gradle.enterprise" version "3.12.2"
 }
 
 gradleEnterprise {
@@ -51,8 +44,8 @@ project(':iconloaderlib').projectDir = new File(rootDir, 'platform_frameworks_li
 include ':searchuilib'
 project(':searchuilib').projectDir = new File(rootDir, 'platform_frameworks_libs_systemui/searchuilib')
 
-include ':SystemUIShared'
-include ':CompatLib'
-include ':CompatLibVR'
-include ':CompatLibVS'
+include ':systemUIShared'
+include ':compatLib'
+include ':compatLibVR'
+include ':compatLibVS'
 include ':hidden-api'
