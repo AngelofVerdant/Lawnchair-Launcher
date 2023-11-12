@@ -308,6 +308,8 @@
     <string name="search_provider_sesame" translatable="false">Sesame</string>
     <string name="search_provider_brave" translatable="false">Brave</string>
     <string name="search_provider_github" translatable="false">GitHub</string>
+    <string name="search_provider_youtube" translatable="false">YouTube</string>
+    <string name="search_provider_pixel_search" translatable="false">Pixel Search</string>
     <string name="app_label">App</string>
     <string name="website_label">Website</string>
     <string name="qsb_search_provider_app_required">App required.</string>
@@ -396,7 +398,7 @@
     <!-- about/About.kt -->
     <string name="news">News</string>
     <string name="support">Support</string>
-    <string name="twitter" translatable="false">Twitter</string>
+    <string name="x_twitter" translatable="false">X</string>
     <string name="github" translatable="false">GitHub</string>
     <string name="discord" translatable="false">Discord</string>
 
